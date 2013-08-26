@@ -1,4 +1,8 @@
-fake-express-server
-===================
+TODO: Examples.
 
-Express-style wrapper for Sinon's fakeServer
+### Development
+
+```
+npm install
+npm start
+```
