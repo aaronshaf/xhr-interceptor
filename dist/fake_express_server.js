@@ -1,5 +1,5 @@
 (function() {
-  var FakeServer, FakeServerRequest, FakeServerResponse;
+  var FakeExpressServer, FakeServerRequest, FakeServerResponse, module;
 
   FakeServerRequest = (function() {
     function FakeServerRequest() {}
@@ -49,7 +49,10 @@
       }
     };
 
-    FakeServerResponse.prototype.json = function(status, body) {};
+    FakeServerResponse.prototype.json = function(status, body) {
+      this.set('Content-Type', 'application/json');
+      return this.send(status, body);
+    };
 
     FakeServerResponse.prototype.type = function(type) {
       return this.headers['Content-Type'] = type;
@@ -69,13 +72,13 @@
 
   })();
 
-  FakeServer = (function() {
-    function FakeServer() {
+  FakeExpressServer = (function() {
+    function FakeExpressServer() {
       this.server = sinon.fakeServer.create();
       this.server.autoRespond = true;
     }
 
-    FakeServer.prototype.get = function(url, callback) {
+    FakeExpressServer.prototype.get = function(url, callback) {
       return this.server.respondWith(url, function(xhr) {
         callback(new FakeServerRequest(xhr), new FakeServerResponse);
         return xhr.respond(200, {
@@ -84,12 +87,22 @@
       });
     };
 
-    return FakeServer;
+    return FakeExpressServer;
 
   })();
+
+  module = FakeExpressServer;
+
+  if (typeof define === 'function' && (typeof define !== "undefined" && define !== null ? define.amd : void 0)) {
+    define(function() {
+      return module;
+    });
+  } else {
+    window.FakeExpressServer = module;
+  }
 
 }).call(this);
 
 /*
-//@ sourceMappingURL=fake-express-server.js.map
+//@ sourceMappingURL=fake_express_server.js.map
 */

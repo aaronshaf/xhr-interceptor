@@ -29,6 +29,8 @@ class FakeServerResponse
       return xhr.respond @statusCode, @headers, statusCode
 
   json: (status,body) ->
+    @set 'Content-Type', 'application/json'
+    @send status, body
 
   type: (type) ->
     @headers['Content-Type'] = type
@@ -39,7 +41,7 @@ class FakeServerResponse
       header.push "<#{link}>; rel=\"#{uri}\""
     @set 'Link', header.join ','
 
-class FakeServer
+class FakeExpressServer
   constructor: ->
     @server = sinon.fakeServer.create()
     @server.autoRespond = true
@@ -48,3 +50,10 @@ class FakeServer
       callback(new FakeServerRequest(xhr),new FakeServerResponse)
       xhr.respond 200,
         'Content-Type': 'application/json'
+
+module = FakeExpressServer
+
+if typeof define is 'function' and define?.amd
+  define -> module
+else
+  window.FakeExpressServer = module

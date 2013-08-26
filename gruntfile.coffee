@@ -16,7 +16,7 @@ module.exports = (grunt) ->
     uglify:
       target:
         files:
-          'dist/fake-express-server.min.js': ['dist/fake-express-server.js']
+          'dist/fake_express_server.min.js': ['dist/fake_express_server.js']
 
     coffee:
       compile:
@@ -27,7 +27,7 @@ module.exports = (grunt) ->
         src: [
           'src/*.coffee'
         ]
-        dest: 'dist/fake-express-server.js'
+        dest: 'dist/fake_express_server.js'
         ext: '.js'
 
   grunt.registerTask 'default', [
