@@ -1,0 +1,18 @@
+{
+  "framework": "qunit",
+  "launch_in_ci": [
+    "Firefox",
+    "PhantomJS"
+  ],
+  "launch_in_dev": [
+    "Chrome"
+  ],
+  "src_files": [
+    "src/*.coffee"
+  ],
+  "serve_files": [
+    "vendor/sinon/sinon*.js",
+    "dist/fake_express_server.js",
+    "tests/main.js"
+  ]
+}

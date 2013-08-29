@@ -1,15 +1,15 @@
 (function() {
-  var FakeExpressServer, FakeServerRequest, FakeServerResponse, module;
+  var FakeExpress, FakeRequest, FakeResponse, module;
 
-  FakeServerRequest = (function() {
-    function FakeServerRequest() {}
+  FakeRequest = (function() {
+    function FakeRequest() {}
 
-    return FakeServerRequest;
+    return FakeRequest;
 
   })();
 
-  FakeServerResponse = (function() {
-    function FakeServerResponse(xhr) {
+  FakeResponse = (function() {
+    function FakeResponse(xhr) {
       this.xhr = xhr;
       this.statusCode = 200;
       this.headers = {
@@ -17,12 +17,12 @@
       };
     }
 
-    FakeServerResponse.prototype.status = function(code) {
+    FakeResponse.prototype.status = function(code) {
       this.statusCode(code);
       return this;
     };
 
-    FakeServerResponse.prototype.set = function(field, value) {
+    FakeResponse.prototype.set = function(field, value) {
       var header, _results;
       if (value && typeof field === 'string') {
         return this[field] = value;
@@ -36,11 +36,11 @@
       }
     };
 
-    FakeServerResponse.prototype.get = function(field) {
+    FakeResponse.prototype.get = function(field) {
       return this[field];
     };
 
-    FakeServerResponse.prototype.send = function(statusCode, body) {
+    FakeResponse.prototype.send = function(statusCode, body) {
       if (typeof status === 'number') {
         return xhr.respond(statusCode, this.headers, body);
       }
@@ -49,16 +49,16 @@
       }
     };
 
-    FakeServerResponse.prototype.json = function(status, body) {
+    FakeResponse.prototype.json = function(status, body) {
       this.set('Content-Type', 'application/json');
       return this.send(status, body);
     };
 
-    FakeServerResponse.prototype.type = function(type) {
+    FakeResponse.prototype.type = function(type) {
       return this.headers['Content-Type'] = type;
     };
 
-    FakeServerResponse.prototype.links = function(links) {
+    FakeResponse.prototype.links = function(links) {
       var header, link, uri;
       header = [];
       for (uri in links) {
@@ -68,37 +68,35 @@
       return this.set('Link', header.join(','));
     };
 
-    return FakeServerResponse;
+    return FakeResponse;
 
   })();
 
-  FakeExpressServer = (function() {
-    function FakeExpressServer() {
-      this.server = sinon.fakeServer.create();
-      this.server.autoRespond = true;
+  FakeExpress = (function() {
+    function FakeExpress(server) {
+      this.server = server;
+      this.routes = [];
     }
 
-    FakeExpressServer.prototype.get = function(url, callback) {
-      return this.server.respondWith(url, function(xhr) {
-        callback(new FakeServerRequest(xhr), new FakeServerResponse);
-        return xhr.respond(200, {
-          'Content-Type': 'application/json'
-        });
+    FakeExpress.prototype.get = function(url, callback) {
+      return this.routes.push({
+        url: url,
+        callback: callback
       });
     };
 
-    return FakeExpressServer;
+    return FakeExpress;
 
   })();
 
-  module = FakeExpressServer;
+  module = FakeExpress;
 
   if (typeof define === 'function' && (typeof define !== "undefined" && define !== null ? define.amd : void 0)) {
     define(function() {
       return module;
     });
   } else {
-    window.FakeExpressServer = module;
+    window.FakeExpress = module;
   }
 
 }).call(this);

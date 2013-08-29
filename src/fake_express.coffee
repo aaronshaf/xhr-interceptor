@@ -43,12 +43,13 @@ class FakeResponse
 
 class FakeExpress
   constructor: (@server) ->
-    @server.autoRespond = true
+    @routes = []
   get: (url, callback) ->
-    @server.respondWith url, (xhr) ->
-      callback(new FakeRequest(xhr),new FakeResponse)
-      xhr.respond 200,
-        'Content-Type': 'application/json'
+    @routes.push {url, callback}
+    # @server.respondWith url, (xhr) ->
+    #   callback(new FakeRequest(xhr),new FakeResponse)
+    #   xhr.respond 200,
+    #     'Content-Type': 'application/json'
 
 module = FakeExpress
 
