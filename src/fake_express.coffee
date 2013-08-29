@@ -1,7 +1,7 @@
-class FakeServerRequest
+class FakeRequest
   constructor: ->
 
-class FakeServerResponse
+class FakeResponse
   constructor: (@xhr) ->
     @statusCode = 200
     @headers =
@@ -41,19 +41,18 @@ class FakeServerResponse
       header.push "<#{link}>; rel=\"#{uri}\""
     @set 'Link', header.join ','
 
-class FakeExpressServer
-  constructor: ->
-    @server = sinon.fakeServer.create()
+class FakeExpress
+  constructor: (@server) ->
     @server.autoRespond = true
   get: (url, callback) ->
     @server.respondWith url, (xhr) ->
-      callback(new FakeServerRequest(xhr),new FakeServerResponse)
+      callback(new FakeRequest(xhr),new FakeResponse)
       xhr.respond 200,
         'Content-Type': 'application/json'
 
-module = FakeExpressServer
+module = FakeExpress
 
 if typeof define is 'function' and define?.amd
   define -> module
 else
-  window.FakeExpressServer = module
+  window.FakeExpress = module
