@@ -1,24 +1,49 @@
 {
-  "name": "fake-express-server",
-  "version": "0.0.1",
+  "name": "xhr-interceptor",
+  "version": "1.0.0",
   "scripts": {
-    "start": "grunt"
+    "build": "babel index.es6.js --out-file index.js",
+    "dev": "webpack --watch",
+    "lint": "standard",
+    "test": "karma start"
   },
-  "description": "Express-style wrapper for Sinon's fakeServer",
+  "description": "Express-style XHR interception for the browser. Useful for both caching and testing.",
   "repository": {
     "type": "git",
-    "url": "https://github.com/aaronshaf/fake-express-server.git"
+    "url": "https://github.com/aaronshaf/xhr-interceptor.git"
   },
-  "author": "Aaron Shafovaloff",
+  "author": "Aaron Shafovaloff <aaronshaf@gmail.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/aaronshaf/fake-express-server/issues"
+    "url": "https://github.com/aaronshaf/xhr-interceptor/issues"
+  },
+  "standard": {
+    "ignore": [
+      "./dist"
+    ]
   },
   "devDependencies": {
-    "grunt": "~0.4.1",
-    "grunt-contrib-coffee": "~0.7.0",
-    "grunt-contrib-watch": "~0.5.3",
-    "matchdep": "~0.1.2",
-    "grunt-contrib-uglify": "~0.2.2"
+    "axios": "^0.5.2",
+    "babel": "^5.0.8",
+    "babel-core": "^5.0.8",
+    "babel-loader": "^5.0.0",
+    "expect": "^1.6.0",
+    "karma": "^0.12.31",
+    "karma-chrome-launcher": "^0.1.7",
+    "karma-cli": "0.0.4",
+    "karma-firefox-launcher": "^0.1.4",
+    "karma-mocha": "^0.1.10",
+    "karma-sourcemap-loader": "^0.3.4",
+    "karma-webpack": "^1.5.0",
+    "mocha": "^2.2.1",
+    "standard": "^3.3.2",
+    "webpack": "^1.7.3",
+    "webpack-dev-server": "^1.8.0"
+  },
+  "dependencies": {
+    "fake-xml-http-request": "^1.1.3",
+    "methods": "^1.1.1",
+    "object-assign": "^2.0.0",
+    "route-recognizer": "^0.1.5"
   }
 }
