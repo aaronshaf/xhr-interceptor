@@ -1,4 +1,6 @@
-### Examples
+Express-style XHR interception for the browser. Useful for caching and testing. Inspired by [trek/pretender](https://github.com/trek/pretender).
+
+## Examples
 
 ```
 npm install xhr-interceptor --save-dev
@@ -42,13 +44,13 @@ describe('basics', () => {
 })
 ```
 
-### Development
+## Development
 
 ```
 npm run dev
 ```
 
-### Test
+## Test
 
 ```
 npm test
@@ -59,3 +61,7 @@ npm test
 ```
 npm run build
 ```
+
+## License
+
+MIT
