@@ -124,6 +124,11 @@ class Response {
     this.statusCode = code
   }
 
+  sendStatus(code) {
+    this.statusCode = code
+    this.request.respond(this.statusCode, this.headers, '')
+  }
+
   json(obj = {}) {
     this.set('Content-Type', 'application/json')
     this.request.respond(this.statusCode, this.headers, JSON.stringify(obj))

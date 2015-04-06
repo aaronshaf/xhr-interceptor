@@ -34,4 +34,22 @@ describe('basics', () => {
 
     app.close()
   })
+
+  it('returns 404 with blank body', async function() {
+    let app = new Interceptor
+
+    app.get('/foo', (req, res) => {
+      res.sendStatus(404)
+    })
+
+    var response
+    try {
+      response = await axios.get('/foo')
+      throw new Error()
+    } catch(err) {
+      expect(err.status).toBe(404)
+    }
+
+    app.close()
+  })
 })
