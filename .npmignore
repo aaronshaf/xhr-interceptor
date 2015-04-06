@@ -1,0 +1,5 @@
+test
+dist
+*.es6.js
+karma.config.js
+webpack.config.js
