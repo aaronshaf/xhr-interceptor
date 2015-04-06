@@ -16,10 +16,6 @@ export class Router {
       }
     })
   }
-
-  use() {
-
-  }
 }
 
 class Interceptor {
@@ -38,13 +34,6 @@ class Interceptor {
     })
   }
 
-  use(prefixOrRouter, router = null) {
-    if(!router && prefixOrRouter) {
-      router = prefixOrRouter
-      // encorporate route handlers
-    }
-  }
-
   listen() {
     this.listening = true
     this._nativeXMLHttpRequest = window.XMLHttpRequest
@@ -55,7 +44,6 @@ class Interceptor {
     this.listening = false
     window.XMLHttpRequest = this._nativeXMLHttpRequest
     delete this._nativeXMLHttpRequest
-    // TODO: remove handlers
   }
 
   intercept() {
@@ -80,33 +68,10 @@ class Interceptor {
         let response = new Response(this)
         match.handler(this, response)
       }
-
-      // console.log({matches})
     }
     FakeRequest.prototype = proto
 
-    // console.log({FakeXMLHttpRequest})
     return FakeRequest
-    /*
-    let xhr = new FakeXMLHttpRequest()
-    xhr.send = function() {
-      // let matches = this.router.recognize("/admin/posts")
-      /*
-
-
-      console.log(arguments)
-      console.log({verb, path})
-      */
-    //}
-    //return xhr
-
-
-
-    /*
-    let result = this.router.recognize(`${verb}--${path}`)
-    */
-
-    // var verb = request.method.toUpperCase();
   }
 }
 
