@@ -1,23 +1,35 @@
 ### Examples
 
+```
+npm install xhr-interceptor --save-dev
+```
+
 ```javascript
-var app = new ClientExpress;
-app.get('/users/1', function(req, res) {
-	res.json({ foo: 'bar' })
-});
+import Interceptor from 'xhr-interceptor'
+
+let app = new Interceptor
+app.get('/users/:id', function(req, res) {
+	res.json({ userId: req.params.id })
+})
+
+app.close()
 
 ```
 
 ### Development
 
 ```
-npm install
 npm run dev
+```
+
+### Test
+
+```
+npm test
 ```
 
 ### Build
 
 ```
-npm install
 npm run build
 ```

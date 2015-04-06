@@ -1,6 +1,6 @@
 {
   "name": "xhr-interceptor",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "scripts": {
     "build": "babel index.es6.js --out-file index.js",
     "dev": "webpack --watch",

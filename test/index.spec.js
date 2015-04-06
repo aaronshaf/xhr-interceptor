@@ -11,7 +11,6 @@ describe('basics', () => {
     app.get('/foo', (req, res) => {
       res.send('bar')
     })
-//    app.listen()
 
     let response = await axios.get('/foo')
     expect(response.data).toBe('bar')
@@ -27,7 +26,6 @@ describe('basics', () => {
         user: { id: req.params.id }
       })
     })
-//    app.listen()
 
     let response = await axios.get('/user/1')
     expect(JSON.stringify(response.data)).toBe(JSON.stringify({
