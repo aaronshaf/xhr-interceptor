@@ -2,9 +2,9 @@
 
 var _interopRequireWildcard = function (obj) { return obj && obj.__esModule ? obj : { 'default': obj }; };
 
-var _classCallCheck = function (instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } };
-
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+var _classCallCheck = function (instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } };
 
 Object.defineProperty(exports, '__esModule', {
   value: true
@@ -25,32 +25,23 @@ var _methods2 = _interopRequireWildcard(_methods);
 
 var FakeXMLHttpRequest = require('fake-xml-http-request/dist/cjs/index')['default'];
 
-var Router = (function () {
-  function Router() {
-    var _this = this;
+var Router = function Router() {
+  var _this = this;
 
-    _classCallCheck(this, Router);
+  _classCallCheck(this, Router);
 
-    this.routes = {};
+  this.routes = {};
 
-    _methods2['default'].forEach(function (method) {
-      _this.routes[method] = [];
-      _this[method] = function () {
-        var path = arguments[0] === undefined ? '/' : arguments[0];
-        var handler = arguments[1] === undefined ? function () {} : arguments[1];
+  _methods2['default'].forEach(function (method) {
+    _this.routes[method] = [];
+    _this[method] = function () {
+      var path = arguments[0] === undefined ? '/' : arguments[0];
+      var handler = arguments[1] === undefined ? function () {} : arguments[1];
 
-        _this.routes[method].push([{ path: path, handler: handler }]);
-      };
-    });
-  }
-
-  _createClass(Router, [{
-    key: 'use',
-    value: function use() {}
-  }]);
-
-  return Router;
-})();
+      _this.routes[method].push([{ path: path, handler: handler }]);
+    };
+  });
+};
 
 exports.Router = Router;
 
@@ -82,17 +73,6 @@ var Interceptor = (function () {
   }
 
   _createClass(Interceptor, [{
-    key: 'use',
-    value: function use(prefixOrRouter) {
-      var router = arguments[1] === undefined ? null : arguments[1];
-
-      if (!router && prefixOrRouter) {
-        router = prefixOrRouter
-        // encorporate route handlers
-        ;
-      }
-    }
-  }, {
     key: 'listen',
     value: function listen() {
       this.listening = true;
@@ -104,9 +84,7 @@ var Interceptor = (function () {
     value: function close() {
       this.listening = false;
       window.XMLHttpRequest = this._nativeXMLHttpRequest;
-      delete this._nativeXMLHttpRequest
-      // TODO: remove handlers
-      ;
+      delete this._nativeXMLHttpRequest;
     }
   }, {
     key: 'intercept',
@@ -132,30 +110,10 @@ var Interceptor = (function () {
           var response = new Response(this);
           match.handler(this, response);
         }
-
-        // console.log({matches})
       };
       FakeRequest.prototype = proto;
 
-      // console.log({FakeXMLHttpRequest})
-      return FakeRequest
-      /*
-      let xhr = new FakeXMLHttpRequest()
-      xhr.send = function() {
-        // let matches = this.router.recognize("/admin/posts")
-        /*
-          console.log(arguments)
-        console.log({verb, path})
-        */
-      //}
-      //return xhr
-
-      /*
-      let result = this.router.recognize(`${verb}--${path}`)
-      */
-
-      // var verb = request.method.toUpperCase();
-      ;
+      return FakeRequest;
     }
   }, {
     key: '__initializeProperties',
@@ -184,6 +142,12 @@ var Response = (function () {
     key: 'status',
     value: function status(code) {
       this.statusCode = code;
+    }
+  }, {
+    key: 'sendStatus',
+    value: function sendStatus(code) {
+      this.statusCode = code;
+      this.request.respond(this.statusCode, this.headers, '');
     }
   }, {
     key: 'json',
