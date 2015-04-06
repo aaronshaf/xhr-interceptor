@@ -7,7 +7,7 @@
     "lint": "standard",
     "test": "karma start"
   },
-  "description": "Express-style XHR interception for the browser. Useful for both caching and testing.",
+  "description": "Express-style XHR interception for the browser. Useful for caching and testing.",
   "repository": {
     "type": "git",
     "url": "https://github.com/aaronshaf/xhr-interceptor.git"
