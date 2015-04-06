@@ -38,7 +38,7 @@ var Router = function Router() {
       var path = arguments[0] === undefined ? '/' : arguments[0];
       var handler = arguments[1] === undefined ? function () {} : arguments[1];
 
-      _this.routes[method].push([{ path: path, handler: handler }]);
+      _this.routes[method].push({ path: path, handler: handler });
     };
   });
 };
@@ -73,6 +73,17 @@ var Interceptor = (function () {
   }
 
   _createClass(Interceptor, [{
+    key: 'use',
+    value: function use() {
+      var _this3 = this;
+
+      var router = arguments[0] === undefined ? new Router() : arguments[0];
+
+      _methods2['default'].forEach(function (method) {
+        _this3.routes[method].add(router.routes[method]);
+      });
+    }
+  }, {
     key: 'listen',
     value: function listen() {
       this.listening = true;

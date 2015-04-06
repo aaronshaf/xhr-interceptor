@@ -1,10 +1,9 @@
 {
   "name": "xhr-interceptor",
-  "version": "1.0.9",
+  "version": "1.1.0",
   "scripts": {
     "build": "babel index.es6.js --out-file index.js",
     "dev": "webpack --watch",
-    "lint": "standard",
     "test": "karma start"
   },
   "main": "index.js",
@@ -20,7 +19,8 @@
   },
   "standard": {
     "ignore": [
-      "./dist"
+      "dist/index.js",
+      "index.js"
     ]
   },
   "devDependencies": {
@@ -37,7 +37,6 @@
     "karma-sourcemap-loader": "^0.3.4",
     "karma-webpack": "^1.5.0",
     "mocha": "^2.2.1",
-    "standard": "^3.3.2",
     "webpack": "^1.7.3",
     "webpack-dev-server": "^1.8.0"
   },

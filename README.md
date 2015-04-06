@@ -65,6 +65,19 @@ describe('basics', () => {
     let response = await axios.post('/foo')
     expect(response.status).toBe(201)
   })
+
+  it('router as middleware', async function() {
+    let router = new Router
+
+    router.get('/foo', (req, res) => {
+      res.send('bar')
+    })
+    app.use(router)
+
+    let response = await axios.get('/foo')
+    expect(response.data).toBe('bar')
+  })
+
 })
 ```
 

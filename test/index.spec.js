@@ -1,8 +1,6 @@
-import Interceptor from '../index.es6'
+import { default as Interceptor, Router } from '../index.es6'
 import expect from 'expect'
 import axios from 'axios'
-
-//import usersRouter from './routes/users'
 
 describe('basics', () => {
   let app
@@ -47,6 +45,7 @@ describe('basics', () => {
       throw new Error()
     } catch(err) {
       expect(err.status).toBe(404)
+      expect(err.data).toBe('')
     }
   })
 
@@ -57,5 +56,17 @@ describe('basics', () => {
 
     let response = await axios.post('/foo')
     expect(response.status).toBe(201)
+  })
+
+  it('router as middleware', async function() {
+    let router = new Router
+
+    router.get('/foo', (req, res) => {
+      res.send('bar')
+    })
+    app.use(router)
+
+    let response = await axios.get('/foo')
+    expect(response.data).toBe('bar')
   })
 })

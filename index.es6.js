@@ -8,11 +8,11 @@ var FakeXMLHttpRequest = require('fake-xml-http-request/dist/cjs/index').default
 export class Router {
   routes = {}
 
-  constructor() {
+  constructor () {
     methods.forEach((method) => {
       this.routes[method] = []
       this[method] = (path = '/', handler = () => {}) => {
-        this.routes[method].push([{ path, handler }])
+        this.routes[method].push({ path, handler })
       }
     })
   }
@@ -22,31 +22,37 @@ class Interceptor {
   listening = false
   routes = {}
 
-  constructor({listening = true} = {}) {
+  constructor ({listening = true} = {}) {
     if(listening) {
       this.listen()
     }
     methods.forEach((method) => {
-      this.routes[method] = new RouteRecognizer()
+      this.routes[method] = new RouteRecognizer
       this[method] = (path = '/', handler = () => {}) => {
         this.routes[method].add([{ path, handler }])
       }
     })
   }
 
-  listen() {
+  use (router = new Router) {
+    methods.forEach((method) => {
+      this.routes[method].add(router.routes[method])
+    })
+  }
+
+  listen () {
     this.listening = true
     this._nativeXMLHttpRequest = window.XMLHttpRequest
     window.XMLHttpRequest = this.intercept(this)
   }
 
-  close() {
+  close () {
     this.listening = false
     window.XMLHttpRequest = this._nativeXMLHttpRequest
     delete this._nativeXMLHttpRequest
   }
 
-  intercept() {
+  intercept () {
     let routes = this.routes
 
     function FakeRequest() {
@@ -81,25 +87,25 @@ class Response {
     'Content-Type': 'text/plain'
   }
 
-  constructor(request) {
+  constructor (request) {
     this.request = request
   }
 
-  status(code) {
+  status (code) {
     this.statusCode = code
   }
 
-  sendStatus(code) {
+  sendStatus (code) {
     this.statusCode = code
     this.request.respond(this.statusCode, this.headers, '')
   }
 
-  json(obj = {}) {
+  json (obj = {}) {
     this.set('Content-Type', 'application/json')
     this.request.respond(this.statusCode, this.headers, JSON.stringify(obj))
   }
 
-  set(field = {}, value = null) {
+  set (field = {}, value = null) {
     if(typeof field === 'object') {
       this.headers = object.assign({}, this.headers, field)
     } else if(typeof field === 'string') {
@@ -107,7 +113,7 @@ class Response {
     }
   }
 
-  send(content) {
+  send (content) {
     this.request.respond(this.statusCode, this.headers, content)
   }
 }
