@@ -5,22 +5,26 @@ import axios from 'axios'
 //import usersRouter from './routes/users'
 
 describe('basics', () => {
-  it('without params', async function() {
-    let app = new Interceptor
+  let app
 
+  beforeEach(() => {
+    app = new Interceptor
+  })
+
+  afterEach(() => {
+    app.close()
+  })
+
+  it('without params', async function() {
     app.get('/foo', (req, res) => {
       res.send('bar')
     })
 
     let response = await axios.get('/foo')
     expect(response.data).toBe('bar')
-
-    app.close()
   })
 
   it('with params', async function() {
-    let app = new Interceptor
-
     app.get('/user/:id', (req, res) => {
       res.json({
         user: { id: req.params.id }
@@ -31,37 +35,27 @@ describe('basics', () => {
     expect(JSON.stringify(response.data)).toBe(JSON.stringify({
       user: { id: '1' }
     }))
-
-    app.close()
   })
 
   it('returns 404 with blank body', async function() {
-    let app = new Interceptor
-
     app.get('/foo', (req, res) => {
       res.sendStatus(404)
     })
 
     try {
-      var response = await axios.get('/foo')
+      let response = await axios.get('/foo')
       throw new Error()
     } catch(err) {
       expect(err.status).toBe(404)
     }
-
-    app.close()
   })
 
   it('post', async function() {
-    let app = new Interceptor
-
     app.post('/foo', (req, res) => {
       res.sendStatus(201)
     })
 
-    var response = await axios.post('/foo')
+    let response = await axios.post('/foo')
     expect(response.status).toBe(201)
-
-    app.close()
   })
 })
