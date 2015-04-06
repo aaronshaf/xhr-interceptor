@@ -41,6 +41,19 @@ describe('basics', () => {
 
     app.close()
   })
+
+  it('post', async function() {
+    let app = new Interceptor
+
+    app.post('/foo', (req, res) => {
+      res.sendStatus(201)
+    })
+
+    var response = await axios.post('/foo')
+    expect(response.status).toBe(201)
+
+    app.close()
+  })
 })
 ```
 
