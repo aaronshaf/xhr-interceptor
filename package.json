@@ -1,12 +1,13 @@
 {
   "name": "xhr-interceptor",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "scripts": {
     "build": "babel index.es6.js --out-file index.js",
     "dev": "webpack --watch",
     "lint": "standard",
     "test": "karma start"
   },
+  "main": "index.js",
   "description": "Express-style XHR interception for the browser. Useful for caching and testing.",
   "repository": {
     "type": "git",
