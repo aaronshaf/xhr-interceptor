@@ -32,9 +32,9 @@ describe('basics', () => {
     })
 
     let response = await axios.get('/user/1')
-    expect(JSON.stringify(response.data)).toBe(JSON.stringify({
+    expect(response.data).toEqual({
       user: { id: '1' }
-    }))
+    })
   })
 
   it('returns 404 with blank body', async function() {
