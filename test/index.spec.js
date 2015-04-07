@@ -19,9 +19,7 @@ describe('basics', () => {
     })
 
     const response = await axios.get('/foo')
-    /*
     expect(response.data).toBe('bar')
-     */
   })
 
   it('with params', async function() {
