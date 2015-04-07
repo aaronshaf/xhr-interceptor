@@ -35,11 +35,23 @@ export default class Interceptor {
     })
   }
 
-  use (router = new Router) {
-    if(router instanceof Router) {
+  use () {
+    if(!arguments.length) {
+      return false
+    }
+
+    if(arguments[0] instanceof Router) {
+      let router = arguments[0]
       this.routes = this.routes.concat(router.routes)
-    } else if(router instanceof Function) {
-      // TODO enable normal app.use
+    } else if(arguments[0] instanceof Function) {
+      let middleware = arguments[0]
+      this.routes.push({
+        handler: router
+      })
+    } else if(arguments[0] instanceof Array) {
+      // TODO
+    } else if(typeof arguments[0] === 'string') {
+      // TODO
     }
   }
 
