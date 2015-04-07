@@ -1,59 +1,86 @@
 /* global window */
 
-import RouteRecognizer from 'route-recognizer'
 import objectAssign from 'object-assign'
+import pathToRegexp from 'path-to-regexp'
 import methods from 'methods'
+import zipObject from 'lodash-node/modern/array/zipObject'
+
 var FakeXMLHttpRequest = require('fake-xml-http-request/dist/cjs/index').default
+const NativeXMLHttpRequest = window.XMLHttpRequest
 
 export class Router {
-  routes = {}
+  routes = []
 
   constructor () {
     methods.forEach((method) => {
-      this.routes[method] = []
       this[method] = (path = '/', handler = () => {}) => {
-        this.routes[method].push({ path, handler })
+        this.routes.push({ method, path, handler })
       }
     })
   }
 }
 
-class Interceptor {
+export default class Interceptor {
   listening = false
-  routes = {}
+  routes = []
 
   constructor ({listening = true} = {}) {
     if(listening) {
       this.listen()
     }
     methods.forEach((method) => {
-      this.routes[method] = new RouteRecognizer
       this[method] = (path = '/', handler = () => {}) => {
-        this.routes[method].add([{ path, handler }])
+        this.routes.push({ method, path, handler })
       }
     })
   }
 
   use (router = new Router) {
-    methods.forEach((method) => {
-      this.routes[method].add(router.routes[method])
-    })
+    if(router instanceof Router) {
+      this.routes = this.routes.concat(router.routes)
+    } else if(router instanceof Function) {
+      // TODO enable normal app.use
+    }
   }
 
   listen () {
     this.listening = true
-    this._nativeXMLHttpRequest = window.XMLHttpRequest
     window.XMLHttpRequest = this.intercept(this)
   }
 
   close () {
     this.listening = false
-    window.XMLHttpRequest = this._nativeXMLHttpRequest
+    window.XMLHttpRequest = NativeXMLHttpRequest
     delete this._nativeXMLHttpRequest
   }
 
+  matchRoutes ({path, method = null}) {
+    return this.routes.map((route) => {
+      if(method && route.method !== method) {
+        return null
+      }
+      let keys = []
+      const regexp = pathToRegexp(route.path, keys)
+      const result = regexp.exec(path)
+      if(!result) {
+        return null
+      }
+      const params = zipObject(keys.map((key, i) => {
+        return [key.name, result[i + 1]]
+      }))
+      return {
+        path: route.path,
+        handler: route.handler,
+        method,
+        params
+      }
+    }).filter(match => match)
+  }
+
   intercept () {
-    let routes = this.routes
+    const routes = this.routes
+    const matchRoutes = this.matchRoutes.bind(this)
+    const _nativeXMLHttpRequest = this._nativeXMLHttpRequest
 
     function FakeRequest() {
       FakeXMLHttpRequest.call(this)
@@ -61,19 +88,28 @@ class Interceptor {
 
     var proto = new FakeXMLHttpRequest()
     proto.send = function() {
-      FakeXMLHttpRequest.prototype.send.apply(this, arguments)
+      const verb = this.method.toLowerCase()
+      const path = this.url
 
-      let verb = this.method.toLowerCase()
-      let path = this.url
-
-      let matches = routes[verb].recognize(path)
-      var match = matches ? matches[0] : null
-
-      if(match) {
-        this.params = match.params
-        let response = new Response(this)
-        match.handler(this, response)
+      const matches = matchRoutes({path, verb})
+      if(!matches.length) {
+        return NativeXMLHttpRequest.send.apply(this, arguments)
       }
+
+      const response = new Response(this)
+      var index = -1
+
+      const next = () => {
+        index++
+        if(index > matches.length) {
+          return false
+        }
+        let match = matches[index]
+        this.params = match.params
+        match.handler(this, response, next)
+      }
+
+      next()
     }
     FakeRequest.prototype = proto
 
@@ -117,5 +153,3 @@ class Response {
     this.request.respond(this.statusCode, this.headers, content)
   }
 }
-
-export default Interceptor

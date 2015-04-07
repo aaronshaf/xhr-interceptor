@@ -1,4 +1,6 @@
-Express-style XHR interception for the browser. Useful for caching and testing. Inspired by [trek/pretender](https://github.com/trek/pretender).
+Express-style XHR interception for the browser. Useful for caching and testing.
+Inspired by [trek/pretender](https://github.com/trek/pretender).
+See also [pgte/nock](https://github.com/pgte/nock).
 
 ## Examples
 

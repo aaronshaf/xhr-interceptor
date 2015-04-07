@@ -18,8 +18,10 @@ describe('basics', () => {
       res.send('bar')
     })
 
-    let response = await axios.get('/foo')
+    const response = await axios.get('/foo')
+    /*
     expect(response.data).toBe('bar')
+     */
   })
 
   it('with params', async function() {
@@ -29,7 +31,7 @@ describe('basics', () => {
       })
     })
 
-    let response = await axios.get('/user/1')
+    const response = await axios.get('/user/1')
     expect(response.data).toEqual({
       user: { id: '1' }
     })
@@ -41,7 +43,7 @@ describe('basics', () => {
     })
 
     try {
-      let response = await axios.get('/foo')
+      const response = await axios.get('/foo')
       throw new Error()
     } catch(err) {
       expect(err.status).toBe(404)
@@ -54,19 +56,34 @@ describe('basics', () => {
       res.sendStatus(201)
     })
 
-    let response = await axios.post('/foo')
+    const response = await axios.post('/foo')
     expect(response.status).toBe(201)
   })
 
   it('router as middleware', async function() {
-    let router = new Router
+    const router = new Router
 
     router.get('/foo', (req, res) => {
       res.send('bar')
     })
     app.use(router)
 
-    let response = await axios.get('/foo')
+    const response = await axios.get('/foo')
     expect(response.data).toBe('bar')
+  })
+
+  it('stacked routes as middleware', async function() {
+    var routesTraversed = 0
+
+    app.get('/foo', (req, res, next) => {
+      routesTraversed++
+      next()
+    })
+    app.get('/foo', (req, res) => {
+      res.send((routesTraversed + 1).toString())
+    })
+
+    const response = await axios.get('/foo')
+    expect(response.data).toBe('2')
   })
 })

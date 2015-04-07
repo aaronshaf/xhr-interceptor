@@ -11,34 +11,38 @@ Object.defineProperty(exports, '__esModule', {
 });
 /* global window */
 
-var _RouteRecognizer = require('route-recognizer');
-
-var _RouteRecognizer2 = _interopRequireWildcard(_RouteRecognizer);
-
 var _objectAssign = require('object-assign');
 
 var _objectAssign2 = _interopRequireWildcard(_objectAssign);
+
+var _pathToRegexp = require('path-to-regexp');
+
+var _pathToRegexp2 = _interopRequireWildcard(_pathToRegexp);
 
 var _methods = require('methods');
 
 var _methods2 = _interopRequireWildcard(_methods);
 
+var _zipObject = require('lodash-node/modern/array/zipObject');
+
+var _zipObject2 = _interopRequireWildcard(_zipObject);
+
 var FakeXMLHttpRequest = require('fake-xml-http-request/dist/cjs/index')['default'];
+var NativeXMLHttpRequest = window.XMLHttpRequest;
 
 var Router = function Router() {
   var _this = this;
 
   _classCallCheck(this, Router);
 
-  this.routes = {};
+  this.routes = [];
 
   _methods2['default'].forEach(function (method) {
-    _this.routes[method] = [];
     _this[method] = function () {
       var path = arguments[0] === undefined ? '/' : arguments[0];
       var handler = arguments[1] === undefined ? function () {} : arguments[1];
 
-      _this.routes[method].push({ path: path, handler: handler });
+      _this.routes.push({ method: method, path: path, handler: handler });
     };
   });
 };
@@ -62,12 +66,11 @@ var Interceptor = (function () {
       this.listen();
     }
     _methods2['default'].forEach(function (method) {
-      _this2.routes[method] = new _RouteRecognizer2['default']();
       _this2[method] = function () {
         var path = arguments[0] === undefined ? '/' : arguments[0];
         var handler = arguments[1] === undefined ? function () {} : arguments[1];
 
-        _this2.routes[method].add([{ path: path, handler: handler }]);
+        _this2.routes.push({ method: method, path: path, handler: handler });
       };
     });
   }
@@ -75,32 +78,61 @@ var Interceptor = (function () {
   _createClass(Interceptor, [{
     key: 'use',
     value: function use() {
-      var _this3 = this;
-
       var router = arguments[0] === undefined ? new Router() : arguments[0];
 
-      _methods2['default'].forEach(function (method) {
-        _this3.routes[method].add(router.routes[method]);
-      });
+      if (router instanceof Router) {
+        this.routes = this.routes.concat(router.routes);
+      } else if (router instanceof Function) {}
     }
   }, {
     key: 'listen',
     value: function listen() {
       this.listening = true;
-      this._nativeXMLHttpRequest = window.XMLHttpRequest;
       window.XMLHttpRequest = this.intercept(this);
     }
   }, {
     key: 'close',
     value: function close() {
       this.listening = false;
-      window.XMLHttpRequest = this._nativeXMLHttpRequest;
+      window.XMLHttpRequest = NativeXMLHttpRequest;
       delete this._nativeXMLHttpRequest;
+    }
+  }, {
+    key: 'matchRoutes',
+    value: function matchRoutes(_ref2) {
+      var path = _ref2.path;
+      var _ref2$method = _ref2.method;
+      var method = _ref2$method === undefined ? null : _ref2$method;
+
+      return this.routes.map(function (route) {
+        if (method && route.method !== method) {
+          return null;
+        }
+        var keys = [];
+        var regexp = _pathToRegexp2['default'](route.path, keys);
+        var result = regexp.exec(path);
+        if (!result) {
+          return null;
+        }
+        var params = _zipObject2['default'](keys.map(function (key, i) {
+          return [key.name, result[i + 1]];
+        }));
+        return {
+          path: route.path,
+          handler: route.handler,
+          method: method,
+          params: params
+        };
+      }).filter(function (match) {
+        return match;
+      });
     }
   }, {
     key: 'intercept',
     value: function intercept() {
       var routes = this.routes;
+      var matchRoutes = this.matchRoutes.bind(this);
+      var _nativeXMLHttpRequest = this._nativeXMLHttpRequest;
 
       function FakeRequest() {
         FakeXMLHttpRequest.call(this);
@@ -108,19 +140,40 @@ var Interceptor = (function () {
 
       var proto = new FakeXMLHttpRequest();
       proto.send = function () {
-        FakeXMLHttpRequest.prototype.send.apply(this, arguments);
+        var _this3 = this;
 
         var verb = this.method.toLowerCase();
         var path = this.url;
 
-        var matches = routes[verb].recognize(path);
-        var match = matches ? matches[0] : null;
-
-        if (match) {
-          this.params = match.params;
-          var response = new Response(this);
-          match.handler(this, response);
+        var matches = matchRoutes({ path: path, verb: verb });
+        if (!matches.length) {
+          return NativeXMLHttpRequest.send.apply(this, arguments);
         }
+
+        var response = new Response(this);
+        var index = -1;
+
+        var next = (function (_next) {
+          function next() {
+            return _next.apply(this, arguments);
+          }
+
+          next.toString = function () {
+            return next.toString();
+          };
+
+          return next;
+        })(function () {
+          index++;
+          if (index > matches.length) {
+            return false;
+          }
+          var match = matches[index];
+          _this3.params = match.params;
+          match.handler(_this3, response, next);
+        });
+
+        next();
       };
       FakeRequest.prototype = proto;
 
@@ -130,12 +183,14 @@ var Interceptor = (function () {
     key: '__initializeProperties',
     value: function __initializeProperties() {
       this.listening = false;
-      this.routes = {};
+      this.routes = [];
     }
   }]);
 
   return Interceptor;
 })();
+
+exports['default'] = Interceptor;
 
 var Response = (function () {
   function Response(request) {
@@ -190,4 +245,4 @@ var Response = (function () {
   return Response;
 })();
 
-exports['default'] = Interceptor;
+// TODO enable normal app.use
