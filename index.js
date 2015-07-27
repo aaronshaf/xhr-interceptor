@@ -27,7 +27,7 @@ var _zipObject = require('lodash-node/modern/array/zipObject');
 
 var _zipObject2 = _interopRequireWildcard(_zipObject);
 
-var FakeXMLHttpRequest = require('fake-xml-http-request/dist/cjs/index')['default'];
+var FakeXMLHttpRequest = require('fake-xml-http-request');
 var NativeXMLHttpRequest = window.XMLHttpRequest;
 
 var Router = function Router() {

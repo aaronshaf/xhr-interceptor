@@ -5,7 +5,7 @@ import pathToRegexp from 'path-to-regexp'
 import methods from 'methods'
 import zipObject from 'lodash-node/modern/array/zipObject'
 
-var FakeXMLHttpRequest = require('fake-xml-http-request/dist/cjs/index').default
+var FakeXMLHttpRequest = require('fake-xml-http-request')
 const NativeXMLHttpRequest = window.XMLHttpRequest
 
 export class Router {
