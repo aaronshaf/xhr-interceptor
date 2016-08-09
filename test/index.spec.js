@@ -84,4 +84,18 @@ describe('basics', () => {
     const response = await axios.get('/foo')
     expect(response.data).toBe(2)
   })
+
+  it('use req.body to access xhr body', async function() {
+    var routesTraversed = 0
+    const id = 'bar'
+
+    app.post('/foo', (req, res) => {
+      res.send(req.body)
+    })
+
+    const response = await axios.post('/foo', { foo: id })
+
+    expect(response.data.foo).toBe(id)
+  })
+
 })
