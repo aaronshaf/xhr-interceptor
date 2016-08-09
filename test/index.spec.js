@@ -82,6 +82,6 @@ describe('basics', () => {
     })
 
     const response = await axios.get('/foo')
-    expect(response.data).toBe('2')
+    expect(response.data).toBe(2)
   })
 })
