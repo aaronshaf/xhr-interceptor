@@ -80,6 +80,19 @@ describe('basics', () => {
     expect(response.data).toBe('bar')
   })
 
+  it('use req.body to access xhr body', async function() {
+    const id = 'bar'
+
+    app.post('/foo', (req, res) => {
+      expect(JSON.parse(req.body).foo).toBe(id)
+      res.send(req.body)
+    })
+
+    const response = await axios.post('/foo', { foo: id })
+
+    expect(response.data.foo).toBe(id)
+  })
+
 })
 ```
 
