@@ -99,7 +99,7 @@ export default class Interceptor {
     }
 
     var proto = new FakeXMLHttpRequest()
-    proto.send = function() {
+    proto.send = function(body) {
       const verb = this.method.toLowerCase()
       const path = this.url
 
@@ -118,6 +118,7 @@ export default class Interceptor {
         }
         let match = matches[index]
         this.params = match.params
+        this.body = body
         match.handler(this, response, next)
       }
 
